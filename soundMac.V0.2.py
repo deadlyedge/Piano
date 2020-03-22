@@ -185,7 +185,7 @@ while not gameExit:
             if keyDown == pygame.K_o:  # 设置激活录音功能
                 recording = not recording  # 按一次是开始录音，再按停止
                 if recording:
-                    # records = []  # 初始化录音变量，因为之前已经有过初始化，所以如果注销本句，每次开始录音会累计录制
+                    records = []  # 初始化录音变量，因为之前已经有过初始化，所以如果注销本句，每次开始录音会累计录制
                     startTime = time.time()  # 记录开始时间
                     textRecording = Text('Recording...', red, OSD)
                 else:
