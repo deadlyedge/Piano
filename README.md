@@ -13,11 +13,17 @@ to grab codes from lot's of other masters, the code style maybe
 confused, and I'm sorry for that.
 
 I leared from this project:
+
   start an pygame project
+  
   KEY event listening
+  
   show text in pygame
+  
   move an object
+  
   remove an object
+  
 
   and
   I acturally start this program with winsound mouldue, and it did
