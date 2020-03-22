@@ -31,3 +31,7 @@ beta version of pygame or it will not installed successfully.
 
 I am study coding from home by myself, so if anyone think any idea
 which could make my code looks better, you're my teacher!
+
+One more thing:
+If you want to run this program you will need the Piano sound .WAV
+files, which should be found at https://github.com/saransha/EasyElectric
