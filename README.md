@@ -41,3 +41,12 @@ which could make my code looks better, you're my teacher!
 One more thing:
 If you want to run this program you will need the Piano sound .WAV
 files, which should be found at https://github.com/saransha/EasyElectric
+
+
+for soundMac.V0.2.py, add fuction: save and load.
+Remember, 
+'\' to record and stop, 
+'backspace' to playback. 
+Now, you can use 
+']' to save record to a file, and use 
+'[' to load them back.
