@@ -3,7 +3,7 @@ import os
 import json
 import pygame
 from tkinter import filedialog, Tk
-from threading import Thread, Timer
+from threading import Thread
 
 pygame.mixer.pre_init(44100, -16, 1, 512)  # 初始化混音器，可有效降低音效延迟
 pygame.init()  # 初始化游戏空间
