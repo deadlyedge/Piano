@@ -174,7 +174,6 @@ def beep(sound):  # 播放音阶（升级了多通道播放）
 @async_call
 def play(data_to_play):  # 异步调用回放模块
     playing = Text('Playing records...', green, OSD)
-    print(data_to_play)
     for wait, note in data_to_play:  # 依次按时间间隔播放记录的音符
         time.sleep(wait)
         if note in key_map:
