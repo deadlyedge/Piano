@@ -13,7 +13,7 @@ to grab codes from lot's of other masters, the code style maybe
 confused, and I'm sorry for that.
 
 ## I learned from this project:
-
+'''
   start an pygame project
   
   KEY event listening
@@ -25,7 +25,7 @@ confused, and I'm sorry for that.
   remove an object
   
   use Tk for loading file
-  
+'''  
 
 ##  and
   I actually start this program with winsound module, and it did
@@ -49,15 +49,14 @@ you have to download them and put to './Piano' director first.
 for soundMac.V0.2.py, add fuction: save and load.
 
 #### Remember, 
+*'\(backslash)' to record and stop, 
 
-'\(backslash)' to record and stop, 
-
-'backspace' to playback.
+*'backspace' to playback.
  
 Now, you can use
  
-']' to save record to a file, and use
+*']' to save record to a file, and use
  
-'[' to load them back.
+*'[' to load them back.
 
 #### This program should works both on Mac and PC.
