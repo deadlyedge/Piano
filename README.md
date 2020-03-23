@@ -45,8 +45,13 @@ files, which should be found at https://github.com/saransha/EasyElectric
 
 for soundMac.V0.2.py, add fuction: save and load.
 Remember, 
-'\' to record and stop, 
-'backspace' to playback. 
-Now, you can use 
-']' to save record to a file, and use 
+
+'\(backslash)' to record and stop, 
+
+'backspace' to playback.
+ 
+Now, you can use
+ 
+']' to save record to a file, and use
+ 
 '[' to load them back.
