@@ -1,9 +1,9 @@
 import time
-
+import os
+import json
 import pygame
-from pygame.locals import *
-
-from async_call import async_call  # 传入模块
+from tkinter import filedialog, Tk
+from threading import Thread, Timer
 
 pygame.mixer.pre_init(44100, -16, 1, 512)  # 初始化混音器，可有效降低音效延迟
 pygame.init()  # 初始化游戏空间
@@ -23,12 +23,13 @@ gameDisplay.fill(backgroundColor)
 pygame.display.update()
 
 # 初始化全局变量
+saveFileRoot = 'records'
 gameExit = False  # 不要退出游戏
 channel_number = 1  # 设置通道计数器
 channel = [0]  # 初始化从1到6声音通道序列
 for i in range(1, 7):
     channel.append(pygame.mixer.Channel(i))
-records = []  # 初始化存储录音变量
+records = [[0, 0]]  # 初始化存储录音变量
 recording = False  # 录音状态
 startTime = 0  # 时间戳
 OSD = []  # 用来显示文字的容器
@@ -38,7 +39,7 @@ lines = []  # 五线谱显示容器
 clock = pygame.time.Clock()  # 时钟对象
 
 # 五线谱发生器速度设定
-spawn_event = USEREVENT + 1
+spawn_event = pygame.USEREVENT + 1
 pygame.time.set_timer(spawn_event, 3000)  # 三秒（3000毫秒）一小节
 
 # 设置音阶字典 对应音频文件来源于 'https://github.com/saransha/EasyElectric'
@@ -78,7 +79,12 @@ key_map = {
     pygame.K_f: 'fa2', pygame.K_g: 'so2', pygame.K_h: 'la2',
     pygame.K_j: 'si2', pygame.K_k: 'do3'
 }
-# 定义音符位置
+key_for_record = pygame.K_BACKSLASH
+key_for_playback = pygame.K_BACKSPACE
+key_for_loadFile = pygame.K_LEFTBRACKET
+key_for_saveFile = pygame.K_RIGHTBRACKET
+
+# 定义音符显示位置
 note_position = {
     'do0': 379, 're0': 367, 'mi0': 355, 'fa0': 343,  # 低音部分
     'so0': 331, 'la0': 319, 'si0': 307,
@@ -89,18 +95,11 @@ note_position = {
 }
 
 
-class Text:  # 文字显示类
-    def __init__(self, text, color, group):
-        self.myFont = pygame.font.Font(None, 50)
-        self.image = self.myFont.render(text, True, color)
-        self.group = group
-        self.group.append(self)  # 把自己添加到组中
+def async_call(fn):
+    def wrapper(*args, **kwargs):
+        Thread(target=fn, args=args, kwargs=kwargs).start()
 
-    def remove(self):
-        self.group.remove(self)
-
-
-textRecording = Text('', red, OSD)
+    return wrapper
 
 
 class Square:
@@ -131,6 +130,17 @@ class Square:
         if self.rect.right <= 0: self.group.remove(self)
 
 
+class Text:  # 文字显示类
+    def __init__(self, text, color, group, timer=0):
+        self.myFont = pygame.font.Font(None, 50)
+        self.image = self.myFont.render(text, True, color)
+        self.group = group
+        self.group.append(self)  # 把自己添加到组中
+
+    def remove(self):
+        self.group.remove(self)
+
+
 class Line(Square):  # 继承方块类
     def __init__(self, group):  # 为五线谱重新初始化
         w, h = 200, 100  # temp vars
@@ -143,6 +153,11 @@ class Line(Square):  # 继承方块类
         self.dy = 0  # 垂直单位位移
         self.group = group
         self.group.append(self)  # 把自己添加到组中
+
+
+def fadeout(textObject):
+    textObject.remove()
+    return
 
 
 def beep(sound):  # 播放音阶（升级了多通道播放）
@@ -159,8 +174,9 @@ def beep(sound):  # 播放音阶（升级了多通道播放）
 @async_call
 def play(data_to_play):  # 异步调用回放模块
     playing = Text('Playing records...', green, OSD)
-    for note, last in data_to_play:  # 依次按时间间隔播放记录的音符
-        time.sleep(last)
+    print(data_to_play)
+    for wait, note in data_to_play:  # 依次按时间间隔播放记录的音符
+        time.sleep(wait)
         if note in key_map:
             beep(key_map[note])
     time.sleep(1)
@@ -168,21 +184,59 @@ def play(data_to_play):  # 异步调用回放模块
     return
 
 
+@async_call
+def writeToFile(data_to_write):
+    timeStr = time.strftime("%Y-%m-%d.%H-%M-%S", time.localtime(time.time()))
+    root = os.path.abspath(os.path.join(os.getcwd(), saveFileRoot))
+    if not os.path.isdir(root):
+        os.mkdir(root)
+    filename = os.path.join(root, 'record.' + timeStr + '.notemap')
+    jsonData = []
+    for delay, note in data_to_write:
+        dataFormat = {'delay': round(delay, 3), 'note': note}
+        jsonData.append(dataFormat)
+    with open(filename, 'w', encoding='utf-8') as jsonFile:
+        json.dump(jsonData, jsonFile, ensure_ascii=False, indent=2)
+    textWritten = Text('File written.', green, OSD)
+    time.sleep(2)
+    textWritten.remove()
+    return
+
+
+def readFromFile():
+    file_root = Tk()
+    file_root.withdraw()
+    data_read = []
+    file = filedialog.askopenfilename(title=u'选择要播放的文件',
+                                      initialdir=(os.path.join(os.getcwd(), saveFileRoot)))
+    with open(file, encoding='utf-8') as jsonFile:
+        data_dict = json.load(jsonFile)
+    file_root.destroy()
+    for data in data_dict:
+        data_read.append(list(data.values()))
+    return data_read
+
+
+textRecording = Text('', red, OSD)
+
 while not gameExit:
     for event in pygame.event.get():
-        if event.type == spawn_event: Line(lines)
+        if event.type == spawn_event:
+            Line(lines)
         if event.type == pygame.QUIT:  # 设定关闭程序的方法
             gameExit = True
 
         if event.type == pygame.KEYDOWN:  # 如果有按键按下
             keyDown = event.key
+            if keyDown == pygame.K_ESCAPE:
+                gameExit = True
 
             # 设定各个音阶按键
             if keyDown in key_map:
                 beep(key_map[keyDown])
 
             # 设定各个控制功能按键
-            if keyDown == pygame.K_o:  # 设置激活录音功能
+            if keyDown == key_for_record:  # 设置激活录音功能
                 recording = not recording  # 按一次是开始录音，再按停止
                 if recording:
                     records = []  # 初始化录音变量，因为之前已经有过初始化，所以如果注销本句，每次开始录音会累计录制
@@ -190,13 +244,18 @@ while not gameExit:
                     textRecording = Text('Recording...', red, OSD)
                 else:
                     textRecording.remove()  # 若停止录音，清除’录音中‘字样
-            if keyDown == pygame.K_p:  # 设置回放
+            if keyDown == key_for_playback:  # 设置回放
+                play(records)
+            if keyDown == key_for_saveFile:
+                writeToFile(records)
+            if keyDown == key_for_loadFile:
+                records = readFromFile()
                 play(records)
 
             if recording:  # 如果录音状态中
-                lastTime = time.time() - startTime  # 记录音符中间的间隔
+                waitTime = time.time() - startTime  # 记录音符中间的间隔
                 startTime = time.time()
-                records.append([keyDown, lastTime])  # 添加音符记录
+                records.append([waitTime, keyDown])  # 添加音符记录
                 # print('录制中...', len(records), keyDown, lastTime)
     [line.move() for line in lines]  # 移动五线谱
     [square.move() for square in squares]  # 移动每个方块
@@ -209,3 +268,4 @@ while not gameExit:
     clock.tick(60)  # set fps 60
 
 pygame.quit()  # 关闭游戏
+quit()
