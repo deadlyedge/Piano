@@ -12,7 +12,7 @@ I am a rookie in coding, codes looks stupid and because I tried
 to grab codes from lot's of other masters, the code style maybe
 confused, and I'm sorry for that.
 
-I learned from this project:
+## I learned from this project:
 
   start an pygame project
   
@@ -27,7 +27,7 @@ I learned from this project:
   use Tk for loading file
   
 
-  and
+##  and
   I actually start this program with winsound module, and it did
   works.  Through winsound I showed my kid the connection in
   frequency and sound with the Beep function, so I keep that name
@@ -40,7 +40,7 @@ beta version of pygame (2.0) or it will not installed successfully.
 I am study coding from home by myself, so if anyone think any idea
 which could make my code looks better, you're my teacher!
 
-One more thing:
+##One more thing:
 If you want to run this program you will need the Piano sound .WAV
 files, which should be found at https://github.com/saransha/EasyElectric
 
@@ -48,7 +48,7 @@ you have to download them and put to './Piano' director first.
 
 for soundMac.V0.2.py, add fuction: save and load.
 
-Remember, 
+####Remember, 
 
 '\(backslash)' to record and stop, 
 
@@ -60,4 +60,4 @@ Now, you can use
  
 '[' to load them back.
 
-This program should works both on Mac and PC.
+####This program should works both on Mac and PC.
