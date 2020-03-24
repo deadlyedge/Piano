@@ -26,10 +26,10 @@ pygame.display.update()
 saveFileRoot = 'records'
 gameExit = False  # 不要退出游戏
 channel_number = 1  # 设置通道计数器
-channel = [0]  # 初始化从1到6声音通道序列
+channel = []  # 初始化从1到6声音通道序列
 for i in range(1, 7):
     channel.append(pygame.mixer.Channel(i))
-records = [[0, 0]]  # 初始化存储录音变量
+records = []  # 初始化存储录音变量
 recording = False  # 录音状态
 startTime = 0  # 时间戳
 OSD = []  # 用来显示文字的容器
@@ -95,7 +95,7 @@ note_position = {
 }
 
 
-def async_call(fn):
+def async_call(fn):  # 设置同步执行函数
     def wrapper(*args, **kwargs):
         Thread(target=fn, args=args, kwargs=kwargs).start()
 
@@ -103,10 +103,12 @@ def async_call(fn):
 
 
 class Square:
-    """方块类"""
+    """方块类（class Note）
+    名字虽然是Square，实际上已经改成了image：note_130.png
+    暂时沿用名字
+    """
 
     def __init__(self, group, startY):
-        """初始化"""
         w, h = 100, 100  # temp vars
         self.image = pygame.Surface((w, h))  # 方块要渲染的图像
         self.image.fill(backgroundColor)  # 填充颜色
@@ -120,13 +122,11 @@ class Square:
         self.group = group
         self.group.append(self)  # 把自己添加到组中
 
-    def move(self):
-        """移动矩形"""
+    def move(self):  # 移动矩形Surface对象
         self.rect.move_ip(self.dx, self.dy)
         self.vanish_on_edge()
 
-    def vanish_on_edge(self):
-        """到边缘消失"""
+    def vanish_on_edge(self):  # 超出边缘后移除
         if self.rect.right <= 0: self.group.remove(self)
 
 
@@ -155,11 +155,6 @@ class Line(Square):  # 继承方块类
         self.group.append(self)  # 把自己添加到组中
 
 
-def fadeout(textObject):
-    textObject.remove()
-    return
-
-
 def beep(sound):  # 播放音阶（升级了多通道播放）
     global channel_number  # 声明全局变量 用来切换声道
     if channel_number > 6:
@@ -178,56 +173,56 @@ def play(data_to_play):  # 异步调用回放模块
         time.sleep(wait)
         if note in key_map:
             beep(key_map[note])
-    time.sleep(1)
+    time.sleep(2)
     playing.remove()
     return
 
 
 @async_call
-def writeToFile(data_to_write):
+def writeToFile(data_to_write):  # 异步调用存盘，主要是为了显示文字的延时
     timeStr = time.strftime("%Y-%m-%d.%H-%M-%S", time.localtime(time.time()))
     root = os.path.abspath(os.path.join(os.getcwd(), saveFileRoot))
-    if not os.path.isdir(root):
+    if not os.path.isdir(root):  # 如果文件夹不存在就创建一个
         os.mkdir(root)
     filename = os.path.join(root, 'record.' + timeStr + '.notemap')
     jsonData = []
-    for delay, note in data_to_write:
+    for delay, note in data_to_write:  # 数据整理成json格式，方便未来扩展功能
         dataFormat = {'delay': round(delay, 3), 'note': note}
         jsonData.append(dataFormat)
     with open(filename, 'w', encoding='utf-8') as jsonFile:
         json.dump(jsonData, jsonFile, ensure_ascii=False, indent=2)
-    textWritten = Text('File written.', green, OSD)
+    textWritten = Text('File written.', green, OSD)  # 显示文件已保存
     time.sleep(2)
     textWritten.remove()
     return
 
 
 def readFromFile():
-    file_root = Tk()
+    file_root = Tk()  # 初始化Tk
     file_root.withdraw()
     data_read = []
     file = filedialog.askopenfilename(title=u'选择要播放的文件',
-                                      initialdir=(os.path.join(os.getcwd(), saveFileRoot)))
+                                      initialdir=(os.path.join(os.getcwd(), saveFileRoot)))  # 打开选择文件窗口
     with open(file, encoding='utf-8') as jsonFile:
         data_dict = json.load(jsonFile)
-    file_root.destroy()
+    file_root.destroy()  # 关闭Tk，焦点返回主窗口
     for data in data_dict:
         data_read.append(list(data.values()))
     return data_read
 
 
-textRecording = Text('', red, OSD)
+textRecording = Text('', red, OSD)  # 因为录制伴随主进程，所以先初始化录制实例
 
 while not gameExit:
     for event in pygame.event.get():
-        if event.type == spawn_event:
+        if event.type == spawn_event:  # 根据定时器生产五线谱
             Line(lines)
         if event.type == pygame.QUIT:  # 设定关闭程序的方法
             gameExit = True
 
         if event.type == pygame.KEYDOWN:  # 如果有按键按下
             keyDown = event.key
-            if keyDown == pygame.K_ESCAPE:
+            if keyDown == pygame.K_ESCAPE:  # 按下‘ESC’键退出
                 gameExit = True
 
             # 设定各个音阶按键
@@ -245,9 +240,9 @@ while not gameExit:
                     textRecording.remove()  # 若停止录音，清除’录音中‘字样
             if keyDown == key_for_playback:  # 设置回放
                 play(records)
-            if keyDown == key_for_saveFile:
+            if keyDown == key_for_saveFile:  # 调用写文件
                 writeToFile(records)
-            if keyDown == key_for_loadFile:
+            if keyDown == key_for_loadFile:  # 调用读取文件并播放
                 records = readFromFile()
                 play(records)
 
