@@ -1,9 +1,10 @@
-import time
-import os
 import json
-import pygame
-from tkinter import filedialog, Tk
+import os
+import time
 from threading import Thread
+from tkinter import filedialog, Tk
+
+import pygame
 
 pygame.mixer.pre_init(44100, -16, 1, 512)  # 初始化混音器，可有效降低音效延迟
 pygame.init()  # 初始化游戏空间
@@ -23,10 +24,9 @@ gameDisplay.fill(backgroundColor)
 pygame.display.update()
 
 # 初始化全局变量
-saveFileRoot = 'records'
 gameExit = False  # 不要退出游戏
 channel_number = 1  # 设置通道计数器
-channel = []  # 初始化从1到6声音通道序列
+channel = [0]  # 初始化从1到6声音通道序列
 for i in range(1, 7):
     channel.append(pygame.mixer.Channel(i))
 records = []  # 初始化存储录音变量
@@ -41,6 +41,9 @@ clock = pygame.time.Clock()  # 时钟对象
 # 五线谱发生器速度设定
 spawn_event = pygame.USEREVENT + 1
 pygame.time.set_timer(spawn_event, 3000)  # 三秒（3000毫秒）一小节
+
+# 指定保存子文件夹
+saveFileRoot = 'records'
 
 # 设置音阶字典 对应音频文件来源于 'https://github.com/saransha/EasyElectric'
 sound_map = {
@@ -79,6 +82,7 @@ key_map = {
     pygame.K_f: 'fa2', pygame.K_g: 'so2', pygame.K_h: 'la2',
     pygame.K_j: 'si2', pygame.K_k: 'do3'
 }
+# 控制按键 KEY for control functions
 key_for_record = pygame.K_BACKSLASH
 key_for_playback = pygame.K_BACKSPACE
 key_for_loadFile = pygame.K_LEFTBRACKET
