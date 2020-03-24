@@ -135,14 +135,14 @@ class Square:
 
 
 class Text:  # 文字显示类
-    def __init__(self, text, color, group, timer=0):
+    def __init__(self, text, color, group):
         self.myFont = pygame.font.Font(None, 50)
         self.image = self.myFont.render(text, True, color)
         self.group = group
         self.group.append(self)  # 把自己添加到组中
 
     def remove(self):
-        self.group.remove(self)
+        self.group.remove(self)  # 从组中移除自己
 
 
 class Line(Square):  # 继承方块类
