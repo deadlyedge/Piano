@@ -2,9 +2,11 @@ import json
 import os
 import time
 from threading import Thread
-from tkinter import filedialog, Tk
 
 import pygame
+
+# from tkinter import filedialog, Tk  # try to replace Tk because it can't run functionally with my Mac
+from pguLoadFile import loadFrame
 
 pygame.mixer.pre_init(44100, -16, 1, 512)  # 初始化混音器，可有效降低音效延迟
 pygame.init()  # 初始化游戏空间
@@ -202,14 +204,14 @@ def writeToFile(data_to_write):  # 异步调用存盘，主要是为了显示文
 
 
 def readFromFile():
-    file_root = Tk()  # 初始化Tk
-    file_root.withdraw()
+    # file_root = Tk()  # 初始化Tk
+    # file_root.withdraw()
     data_read = []
-    file = filedialog.askopenfilename(title=u'选择要播放的文件',
-                                      initialdir=(os.path.join(os.getcwd(), saveFileRoot)))  # 打开选择文件窗口
-    with open(file, encoding='utf-8') as jsonFile:
+    # file = filedialog.askopenfilename(title=u'选择要播放的文件',
+    #                                   initialdir=saveFileRoot)  # 打开选择文件窗口
+    with open(loadFrame(), encoding='utf-8') as jsonFile:
         data_dict = json.load(jsonFile)
-    file_root.destroy()  # 关闭Tk，焦点返回主窗口
+    # file_root.destroy()  # 关闭Tk，焦点返回主窗口
     for data in data_dict:
         data_read.append(list(data.values()))
     return data_read
