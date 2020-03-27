@@ -30,9 +30,9 @@ confused, and I'm sorry for that.
   frequency and sound with the Beep function, so I keep that name
   used continued.
   
-This program is written in python 3.7 with pygame 1.9.6, although 
-it could work with python 3.8 but you have to choose install the 
-beta version of pygame (2.0) or it will not installed successfully.
+This program is written in python 3.7 with pygame 1.9.6, but on a
+ Mac or with python 3.8 you have to choose install the 
+beta version of pygame (2.0) or it will not work.
 
 I am study coding from home by myself, so if anyone think any idea
 which could make my code looks better, you're my teacher!
