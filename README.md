@@ -1,7 +1,7 @@
 # Piano
 pygame learning
 
-This weekend I work with my kid for a sciense-music project and
+This weekend I work with my kid for a science-music project and
 here are some code for it.
 
 I choose pygame because I want to learn to use class object in my
@@ -44,17 +44,15 @@ files, which should be found at https://github.com/saransha/EasyElectric
 
 you have to download them and put to './Piano' director first.
 
-for soundMac.V0.2.py, add fuction: save and load.
+for soundMac.V0.2.py, add function: save and load.
 
 #### Remember, 
  * '\(backslash)' to record and stop, 
-
  * 'backspace' to playback.
  
 Now, you can use
  
  * ']' to save record to a file, and use
- 
  * '[' to load them back.
 
 #### This program should works both on Mac and PC.
