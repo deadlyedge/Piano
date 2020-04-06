@@ -136,6 +136,15 @@ class Square:
         if self.rect.right <= 0: self.group.remove(self)
 
 
+class Line(Square):  # 继承方块类
+    def __init__(self, group):  # 为五线谱重新初始化
+        Square.__init__(self, group, 260)
+        w, h = 200, 100  # temp vars
+        self.image = pygame.Surface((w, h))  # 创建五线谱对象
+        self.image = pygame.image.load("images/line.png")  # 五线谱要渲染的图像
+        self.rect.centerx = display_width + 100  # 创建时的x坐标
+
+
 class Text:  # 文字显示类
     def __init__(self, text, color, group):
         self.myFont = pygame.font.Font(None, 50)
@@ -145,20 +154,6 @@ class Text:  # 文字显示类
 
     def remove(self):
         self.group.remove(self)  # 从组中移除自己
-
-
-class Line(Square):  # 继承方块类
-    def __init__(self, group):  # 为五线谱重新初始化
-        w, h = 200, 100  # temp vars
-        self.image = pygame.Surface((w, h))  # 创建五线谱对象
-        self.image = pygame.image.load("images/line.png")  # 五线谱要渲染的图像
-        self.rect = self.image.get_rect()  # 五线谱的矩形对象
-        self.rect.centerx = display_width + 100  # 创建时的x坐标
-        self.rect.centery = 260  # 创建时的y坐标
-        self.dx = -1  # 水平单位位移
-        self.dy = 0  # 垂直单位位移
-        self.group = group
-        self.group.append(self)  # 把自己添加到组中
 
 
 def beep(sound):  # 播放音阶（升级了多通道播放）
@@ -204,9 +199,9 @@ def writeToFile(data_to_write):  # 异步调用存盘，主要是为了显示文
 
 
 def readFromFile():
+    data_read = []
     # file_root = Tk()  # 初始化Tk
     # file_root.withdraw()
-    data_read = []
     # file = filedialog.askopenfilename(title=u'选择要播放的文件',
     #                                   initialdir=saveFileRoot)  # 打开选择文件窗口
     with open(loadFrame(), encoding='utf-8') as jsonFile:
