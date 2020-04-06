@@ -22,6 +22,7 @@ confused, and I'm sorry for that.
   use Tk for loading file
   replace Tk with pygame-pgu because Mac won't let me to open 
   another window
+  learn more about Class-Object
 ```  
 
 ##  and
